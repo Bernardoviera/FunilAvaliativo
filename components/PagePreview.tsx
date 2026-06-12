@@ -1,5 +1,6 @@
 "use client";
 
+import { ExternalLink } from "lucide-react";
 import type { ScoreItem, ItemStatus } from "@/lib/scoreGenerator";
 
 interface Props {
@@ -8,22 +9,28 @@ interface Props {
 }
 
 const DOT_COLOR: Record<ItemStatus, string> = {
-  good:    "bg-green-500",
-  warning: "bg-amber-500",
-  critical:"bg-red-500",
+  good:     "bg-green-500",
+  warning:  "bg-amber-500",
+  critical: "bg-red-500",
 };
 
-// Percentage positions inside the 230 px skeleton body
+// 5 positions for the 5 evaluation items (after removing image_quality)
 const POSITIONS = [
-  { top: "14%", left: "76%" }, // 1 – loading_speed   → hero, top-right
-  { top: "14%", left: "4%"  }, // 2 – image_quality   → hero, top-left
-  { top: "40%", left: "4%"  }, // 3 – value_prop      → heading block
-  { top: "59%", left: "28%" }, // 4 – cta_positioning → button
-  { top: "4%",  left: "54%" }, // 5 – color_contrast  → navbar
-  { top: "80%", left: "4%"  }, // 6 – social_proof    → features
+  { top: "14%", left: "74%" }, // 1 – loading_speed    → hero top-right
+  { top: "38%", left: "4%"  }, // 2 – value_proposition→ heading zone
+  { top: "58%", left: "28%" }, // 3 – cta_positioning  → button zone
+  { top: "4%",  left: "55%" }, // 4 – color_contrast   → navbar area
+  { top: "80%", left: "4%"  }, // 5 – social_proof     → features zone
 ];
 
+function toHref(raw: string): string {
+  const trimmed = raw.trim();
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
+}
+
 export default function PagePreview({ url, items }: Props) {
+  const href = toHref(url);
   const displayUrl = url.length > 52 ? url.slice(0, 49) + "…" : url;
 
   return (
@@ -33,32 +40,44 @@ export default function PagePreview({ url, items }: Props) {
         <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
           Visualização da página analisada
         </span>
-        <span className="text-xs text-slate-400">
-          Os números correspondem ao detalhamento abaixo
-        </span>
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 text-xs text-blue-500 hover:text-blue-700 font-medium transition-colors"
+        >
+          Abrir página
+          <ExternalLink size={11} />
+        </a>
       </div>
 
-      {/* Browser chrome */}
-      <div className="mx-4 mt-3 rounded-t-lg overflow-hidden border border-slate-200">
-        <div className="bg-slate-100 px-3 py-2 flex items-center gap-2.5">
-          {/* Traffic lights */}
+      {/* Clickable browser window */}
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block mx-4 mt-3 rounded-t-lg overflow-hidden border border-slate-200 cursor-pointer group"
+        title="Clique para abrir a página"
+      >
+        {/* Chrome bar */}
+        <div className="bg-slate-100 px-3 py-2 flex items-center gap-2.5 group-hover:bg-slate-200 transition-colors">
           <div className="flex gap-1.5 shrink-0">
             <div className="w-2.5 h-2.5 rounded-full bg-red-400/70" />
             <div className="w-2.5 h-2.5 rounded-full bg-amber-400/70" />
             <div className="w-2.5 h-2.5 rounded-full bg-green-500/70" />
           </div>
-          {/* URL bar */}
           <div className="flex-1 bg-white rounded px-2.5 py-1 flex items-center gap-1.5 border border-slate-200 min-w-0">
             <svg className="w-2.5 h-2.5 text-green-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
             <span className="text-[10px] text-slate-500 truncate font-mono">{displayUrl}</span>
+            <ExternalLink size={9} className="ml-auto text-slate-300 group-hover:text-blue-400 transition-colors shrink-0" />
           </div>
         </div>
 
         {/* Skeleton body */}
-        <div className="relative overflow-hidden bg-white border-t border-slate-100" style={{ height: 230 }}>
-          {/* Navbar */}
+        <div className="relative overflow-hidden bg-white border-t border-slate-100" style={{ height: 220 }}>
+          {/* Navbar skeleton */}
           <div className="flex items-center justify-between px-4 py-2.5 border-b border-slate-100">
             <div className="h-4 w-20 bg-slate-300 rounded-md" />
             <div className="flex items-center gap-2">
@@ -69,7 +88,7 @@ export default function PagePreview({ url, items }: Props) {
             </div>
           </div>
 
-          {/* Hero */}
+          {/* Hero skeleton */}
           <div className="px-4 pt-4 space-y-2.5">
             <div className="h-6 bg-slate-300 rounded-md w-4/5" />
             <div className="h-4 bg-slate-200 rounded-md w-3/5" />
@@ -77,7 +96,7 @@ export default function PagePreview({ url, items }: Props) {
             <div className="h-8 w-28 bg-blue-300 rounded-lg mt-1" />
           </div>
 
-          {/* Feature blocks */}
+          {/* Feature blocks skeleton */}
           <div className="flex gap-2 px-4 pt-4">
             <div className="h-12 bg-slate-100 rounded-lg flex-1 border border-slate-200" />
             <div className="h-12 bg-slate-100 rounded-lg flex-1 border border-slate-200" />
@@ -85,7 +104,7 @@ export default function PagePreview({ url, items }: Props) {
           </div>
 
           {/* Bottom fade */}
-          <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+          <div className="absolute bottom-0 left-0 right-0 h-14 bg-gradient-to-t from-white to-transparent pointer-events-none" />
 
           {/* Analysis dots */}
           {items.map((item, i) => {
@@ -94,7 +113,7 @@ export default function PagePreview({ url, items }: Props) {
             return (
               <div
                 key={item.id}
-                className="absolute"
+                className="absolute pointer-events-none"
                 style={{
                   top: pos.top,
                   left: pos.left,
@@ -102,20 +121,18 @@ export default function PagePreview({ url, items }: Props) {
                 }}
               >
                 <div className={`w-6 h-6 rounded-full ${DOT_COLOR[item.status]} ring-2 ring-white shadow-lg flex items-center justify-center`}>
-                  <span className="text-[10px] font-bold text-white leading-none">
-                    {i + 1}
-                  </span>
+                  <span className="text-[10px] font-bold text-white leading-none">{i + 1}</span>
                 </div>
               </div>
             );
           })}
         </div>
-      </div>
+      </a>
 
-      {/* Legend strip */}
-      <div className="mx-4 mb-4 px-3 py-2 flex flex-wrap gap-x-4 gap-y-1.5 bg-slate-50 rounded-b-lg border border-t-0 border-slate-200">
+      {/* Legend */}
+      <div className="mx-4 mb-4 px-3 py-2.5 flex flex-wrap gap-x-4 gap-y-2 bg-slate-50 rounded-b-lg border border-t-0 border-slate-200">
         {items.map((item, i) => (
-          <span key={item.id} className="inline-flex items-center gap-1.5 text-[11px] text-slate-500">
+          <span key={item.id} className="inline-flex items-center gap-1.5 text-[11px] text-slate-600">
             <span className={`w-4 h-4 rounded-full ${DOT_COLOR[item.status]} flex items-center justify-center text-[9px] font-bold text-white shrink-0`}>
               {i + 1}
             </span>

@@ -41,11 +41,6 @@ const EVALUATION_ITEMS: Omit<ScoreItem, "status">[] = [
     description: "Tempo até o primeiro conteúdo visível (LCP)",
   },
   {
-    id: "image_quality",
-    label: "Qualidade das imagens",
-    description: "Resolução, compressão e relevância das imagens",
-  },
-  {
     id: "value_proposition",
     label: "Clareza da proposta de valor",
     description: "O visitante entende imediatamente o que você oferece",
@@ -72,7 +67,6 @@ const EVALUATION_ITEMS: Omit<ScoreItem, "status">[] = [
 const ITEM_WEIGHTS: Record<string, [number, number, number]> = {
   // [P(good), P(warning), P(critical)]
   loading_speed: [0.25, 0.45, 0.30],
-  image_quality: [0.35, 0.40, 0.25],
   value_proposition: [0.20, 0.45, 0.35],
   cta_positioning: [0.25, 0.40, 0.35],
   color_contrast: [0.30, 0.45, 0.25],
