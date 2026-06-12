@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { ExternalLink } from "lucide-react";
 import type { ScoreItem, ItemStatus } from "@/lib/scoreGenerator";
 
@@ -14,24 +15,28 @@ const DOT_COLOR: Record<ItemStatus, string> = {
   critical: "bg-red-500",
 };
 
-// 5 positions for the 5 evaluation items (after removing image_quality)
 const POSITIONS = [
-  { top: "14%", left: "74%" }, // 1 – loading_speed    → hero top-right
-  { top: "38%", left: "4%"  }, // 2 – value_proposition→ heading zone
-  { top: "58%", left: "28%" }, // 3 – cta_positioning  → button zone
-  { top: "4%",  left: "55%" }, // 4 – color_contrast   → navbar area
-  { top: "80%", left: "4%"  }, // 5 – social_proof     → features zone
+  { top: "14%", left: "74%" }, // 1 – loading_speed
+  { top: "38%", left: "4%"  }, // 2 – value_proposition
+  { top: "58%", left: "28%" }, // 3 – cta_positioning
+  { top: "4%",  left: "55%" }, // 4 – color_contrast
+  { top: "80%", left: "4%"  }, // 5 – social_proof
 ];
 
 function toHref(raw: string): string {
-  const trimmed = raw.trim();
-  if (/^https?:\/\//i.test(trimmed)) return trimmed;
-  return `https://${trimmed}`;
+  const t = raw.trim();
+  return /^https?:\/\//i.test(t) ? t : `https://${t}`;
 }
 
 export default function PagePreview({ url, items }: Props) {
   const href = toHref(url);
   const displayUrl = url.length > 52 ? url.slice(0, 49) + "…" : url;
+
+  // thum.io: free screenshot service, no API key required
+  const screenshotSrc = `https://image.thum.io/get/width/800/crop/500/${href}`;
+
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError]   = useState(false);
 
   return (
     <div className="bg-white rounded-2xl shadow-xl border border-slate-100 mb-5">
@@ -56,7 +61,7 @@ export default function PagePreview({ url, items }: Props) {
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="block mx-4 mt-3 rounded-t-lg overflow-hidden border border-slate-200 cursor-pointer group"
+        className="block mx-4 mt-3 rounded-t-lg overflow-hidden border border-slate-200 group"
         title="Clique para abrir a página"
       >
         {/* Chrome bar */}
@@ -75,36 +80,63 @@ export default function PagePreview({ url, items }: Props) {
           </div>
         </div>
 
-        {/* Skeleton body */}
-        <div className="relative overflow-hidden bg-white border-t border-slate-100" style={{ height: 220 }}>
-          {/* Navbar skeleton */}
-          <div className="flex items-center justify-between px-4 py-2.5 border-b border-slate-100">
-            <div className="h-4 w-20 bg-slate-300 rounded-md" />
-            <div className="flex items-center gap-2">
-              <div className="h-2.5 w-8 bg-slate-200 rounded" />
-              <div className="h-2.5 w-8 bg-slate-200 rounded" />
-              <div className="h-2.5 w-8 bg-slate-200 rounded" />
-              <div className="h-6 w-14 bg-blue-200 rounded-full" />
+        {/* Page content */}
+        <div className="relative overflow-hidden bg-slate-50" style={{ height: 220 }}>
+
+          {/* Real screenshot — hidden until loaded */}
+          {!error && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={screenshotSrc}
+              alt="Screenshot da página"
+              className={`absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-500 ${loaded ? "opacity-100" : "opacity-0"}`}
+              onLoad={() => setLoaded(true)}
+              onError={() => setError(true)}
+            />
+          )}
+
+          {/* Skeleton — shown while loading or on error */}
+          {!loaded && (
+            <div className="absolute inset-0 bg-white">
+              {/* Navbar skeleton */}
+              <div className="flex items-center justify-between px-4 py-2.5 border-b border-slate-100">
+                <div className="h-4 w-20 bg-slate-300 rounded-md" />
+                <div className="flex items-center gap-2">
+                  <div className="h-2.5 w-8 bg-slate-200 rounded" />
+                  <div className="h-2.5 w-8 bg-slate-200 rounded" />
+                  <div className="h-2.5 w-8 bg-slate-200 rounded" />
+                  <div className="h-6 w-14 bg-blue-200 rounded-full" />
+                </div>
+              </div>
+              {/* Hero skeleton */}
+              <div className="px-4 pt-4 space-y-2.5">
+                <div className="h-6 bg-slate-200 rounded-md w-4/5" />
+                <div className="h-4 bg-slate-200 rounded-md w-3/5" />
+                <div className="h-4 bg-slate-200 rounded-md w-2/3" />
+                <div className="h-8 w-28 bg-blue-100 rounded-lg mt-1" />
+              </div>
+              {/* Feature blocks skeleton */}
+              <div className="flex gap-2 px-4 pt-4">
+                <div className="h-10 bg-slate-100 rounded-lg flex-1 border border-slate-200" />
+                <div className="h-10 bg-slate-100 rounded-lg flex-1 border border-slate-200" />
+                <div className="h-10 bg-slate-100 rounded-lg flex-1 border border-slate-200" />
+              </div>
+              {/* Loading spinner — only if not an error */}
+              {!error && (
+                <div className="absolute inset-0 flex items-center justify-center bg-white/50">
+                  <div className="flex items-center gap-2 text-xs text-slate-400 bg-white px-3 py-2 rounded-full shadow-sm border border-slate-100">
+                    <div className="w-3.5 h-3.5 border-2 border-blue-200 border-t-blue-500 rounded-full animate-spin" />
+                    Carregando preview…
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
+          )}
 
-          {/* Hero skeleton */}
-          <div className="px-4 pt-4 space-y-2.5">
-            <div className="h-6 bg-slate-300 rounded-md w-4/5" />
-            <div className="h-4 bg-slate-200 rounded-md w-3/5" />
-            <div className="h-4 bg-slate-200 rounded-md w-2/3" />
-            <div className="h-8 w-28 bg-blue-300 rounded-lg mt-1" />
-          </div>
-
-          {/* Feature blocks skeleton */}
-          <div className="flex gap-2 px-4 pt-4">
-            <div className="h-12 bg-slate-100 rounded-lg flex-1 border border-slate-200" />
-            <div className="h-12 bg-slate-100 rounded-lg flex-1 border border-slate-200" />
-            <div className="h-12 bg-slate-100 rounded-lg flex-1 border border-slate-200" />
-          </div>
-
-          {/* Bottom fade */}
-          <div className="absolute bottom-0 left-0 right-0 h-14 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+          {/* Subtle bottom fade over the screenshot */}
+          {loaded && !error && (
+            <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white/70 to-transparent pointer-events-none" />
+          )}
 
           {/* Analysis dots */}
           {items.map((item, i) => {
@@ -117,7 +149,7 @@ export default function PagePreview({ url, items }: Props) {
                 style={{
                   top: pos.top,
                   left: pos.left,
-                  animation: `fadeIn 0.3s ease-out ${0.1 + i * 0.07}s both`,
+                  animation: `fadeIn 0.3s ease-out ${0.2 + i * 0.08}s both`,
                 }}
               >
                 <div className={`w-6 h-6 rounded-full ${DOT_COLOR[item.status]} ring-2 ring-white shadow-lg flex items-center justify-center`}>
