@@ -15,14 +15,6 @@ const DOT_COLOR: Record<ItemStatus, string> = {
   critical: "bg-red-500",
 };
 
-const POSITIONS = [
-  { top: "14%", left: "74%" }, // 1 – loading_speed
-  { top: "38%", left: "4%"  }, // 2 – value_proposition
-  { top: "58%", left: "28%" }, // 3 – cta_positioning
-  { top: "4%",  left: "55%" }, // 4 – color_contrast
-  { top: "80%", left: "4%"  }, // 5 – social_proof
-];
-
 function toHref(raw: string): string {
   const t = raw.trim();
   return /^https?:\/\//i.test(t) ? t : `https://${t}`;
@@ -138,26 +130,6 @@ export default function PagePreview({ url, items }: Props) {
             <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white/70 to-transparent pointer-events-none" />
           )}
 
-          {/* Analysis dots */}
-          {items.map((item, i) => {
-            const pos = POSITIONS[i];
-            if (!pos) return null;
-            return (
-              <div
-                key={item.id}
-                className="absolute pointer-events-none"
-                style={{
-                  top: pos.top,
-                  left: pos.left,
-                  animation: `fadeIn 0.3s ease-out ${0.2 + i * 0.08}s both`,
-                }}
-              >
-                <div className={`w-6 h-6 rounded-full ${DOT_COLOR[item.status]} ring-2 ring-white shadow-lg flex items-center justify-center`}>
-                  <span className="text-[10px] font-bold text-white leading-none">{i + 1}</span>
-                </div>
-              </div>
-            );
-          })}
         </div>
       </a>
 
