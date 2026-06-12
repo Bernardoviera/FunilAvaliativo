@@ -11,13 +11,15 @@ interface Props {
 const STEPS = [
   "Acessando página…",
   "Analisando estrutura visual…",
+  "Verificando velocidade de carregamento…",
   "Verificando elementos de conversão…",
   "Avaliando copy e CTAs…",
+  "Analisando prova social e credibilidade…",
   "Calculando pontuação final…",
 ];
 
-const TOTAL_DURATION = 7000; // ms
-const STEP_INTERVAL = 1300; // ms per message
+const TOTAL_DURATION = 11000; // ms
+const STEP_INTERVAL = 1400; // ms per message
 
 export default function LoadingScreen({ url, onComplete }: Props) {
   const [stepIndex, setStepIndex] = useState(0);
